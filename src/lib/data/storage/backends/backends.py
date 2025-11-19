@@ -878,8 +878,13 @@ class AzureBlobStorageBackend(common.StorageBackend):
         if _skip_data_auth():
             return
 
+        connection_string = access_key.strip() if access_key else None
+
         def _validate_auth():
-            with azure.create_client(access_key) as service_client:
+            with azure.create_client(
+                connection_string=connection_string,
+                account_url=self.endpoint,
+            ) as service_client:
                 if self.container:
                     with service_client.get_container_client(self.container) as container_client:
                         container_client.get_container_properties()
@@ -925,8 +930,11 @@ class AzureBlobStorageBackend(common.StorageBackend):
         """
         Returns a factory for creating storage clients.
         """
+        connection_string = access_key.strip() if access_key else None
+
         return azure.AzureBlobStorageClientFactory(  # pylint: disable=unexpected-keyword-arg
-            connection_string=access_key,
+            connection_string=connection_string,
+            account_url=self.endpoint,
         )
 
 
