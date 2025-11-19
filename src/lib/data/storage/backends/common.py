@@ -184,8 +184,8 @@ class StorageBackend(abc.ABC, pydantic.BaseModel, extra=pydantic.Extra.forbid):
     @abc.abstractmethod
     def data_auth(
         self,
-        access_key_id: str,
-        access_key: str,
+        access_key_id: str | None,
+        access_key: str | None,
         region: str | None = None,
         access_type: AccessType | None = None,
     ):
@@ -197,8 +197,8 @@ class StorageBackend(abc.ABC, pydantic.BaseModel, extra=pydantic.Extra.forbid):
     @abc.abstractmethod
     def region(
         self,
-        access_key_id: str,
-        access_key: str,
+        access_key_id: str | None,
+        access_key: str | None,
     ) -> str:
         """
         Infer the region of the bucket via provided credentials.
@@ -232,8 +232,8 @@ class StorageBackend(abc.ABC, pydantic.BaseModel, extra=pydantic.Extra.forbid):
     @abc.abstractmethod
     def client_factory(
         self,
-        access_key_id: str,
-        access_key: str,
+        access_key_id: str | None,
+        access_key: str | None,
         request_headers: List[header.RequestHeaders] | None = None,
         **kwargs: Any,
     ) -> provider.StorageClientFactory:

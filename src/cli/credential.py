@@ -45,7 +45,7 @@ def _save_config(data_cred: credentials.DataCredential):
 
     config['auth']['data'][data_cred.endpoint] = {
         'access_key_id': data_cred.access_key_id,
-        'access_key': data_cred.access_key.get_secret_value(),
+        'access_key': data_cred.get_access_key_value(),
         'region': data_cred.region}
     with open(password_file, 'w', encoding='utf-8') as file:
         yaml.dump(config, file)

@@ -30,6 +30,7 @@ spec:
     metadata:
       labels:
         app: {{ .Values.services.service.serviceName }}
+        {{- include "osmo.extra-labels" .Values.services.service | nindent 8 }}
       annotations:
         {{- include "osmo.extra-annotations" .Values.services.service | nindent 8 }}
         {{- if .Values.sidecars.otel.enabled }}
@@ -63,7 +64,7 @@ spec:
       {{ toYaml .Values.services.service.tolerations | nindent 8 }}
       imagePullSecrets:
       - name: {{ .Values.global.imagePullSecret }}
-      serviceAccountName: {{ include "osmo.service-account-name" (dict "serviceAccountName" .Values.services.service.serviceAccountName "Values" .Values) }}
+      serviceAccountName: {{ include "osmo.service-account-name" (dict "serviceAccountName" .Values.services.service.serviceAccountName "root" .) }}
       {{- with .Values.services.service.initContainers }}
       initContainers:
       {{- toYaml . | nindent 6 }}
