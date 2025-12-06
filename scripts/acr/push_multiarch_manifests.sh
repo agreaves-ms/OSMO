@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OSMO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+
 # Push multi-architecture manifests to ACR
 # Run acr_docker_config_setup.sh first to set up Docker authentication
 
@@ -30,7 +33,7 @@ shift 2
 
 REGISTRY_FQDN="${ACR_NAME}.azurecr.io"
 REGISTRY_PATH="${REGISTRY_FQDN}/osmo"
-DOCKER_CONFIG_DIR=".cache/docker"
+DOCKER_CONFIG_DIR="$(pwd)/.cache/docker"
 
 # Default image names if none provided
 DEFAULT_IMAGE_NAMES=(
@@ -73,8 +76,10 @@ echo "  Tag: ${IMAGE_TAG}"
 echo "  Images: ${IMAGE_NAMES[*]}"
 echo ""
 
-DOCKER_CONFIG="$(pwd)/$DOCKER_CONFIG_DIR"
+DOCKER_CONFIG="${DOCKER_CONFIG_DIR}"
 export DOCKER_CONFIG
+
+cd "${OSMO_ROOT}"
 
 bazel run @osmo_workspace//run:push_multiarch_manifests -- \
   --registry_path "$REGISTRY_PATH" \

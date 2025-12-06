@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Resolve OSMO root directory (where this script lives)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OSMO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+
 if [ "$#" -lt 1 ]; then
   cat <<'USAGE'
 Usage: scripts/acr/publish_charts.sh <acr-name>
@@ -14,7 +18,7 @@ fi
 ACR_NAME="$1"
 REGISTRY_FQDN="${ACR_NAME}.azurecr.io"
 OCI_PREFIX="oci://${REGISTRY_FQDN}/helm"
-CHART_ROOT="deployments/charts"
+CHART_ROOT="${OSMO_ROOT}/deployments/charts"
 # Package individual charts first, then umbrella charts with dependencies
 CHARTS=(service router backend-operator web-ui)
 
