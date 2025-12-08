@@ -1228,7 +1228,7 @@ class PostgresConnector:
                         return credentials.DecryptedDataCredential(
                             region=bucket.region,
                             access_key_id=bucket.default_credential.access_key_id,
-                            access_key=bucket.default_credential.access_key.get_secret_value(),
+                            access_key=bucket.default_credential.get_access_key_value(),
                             endpoint=bucket_info.profile
                         )
                     break
@@ -1255,7 +1255,7 @@ class PostgresConnector:
                 user_creds[bucket_info.profile] = credentials.DecryptedDataCredential(
                     region=bucket.region,
                     access_key_id=bucket.default_credential.access_key_id,
-                    access_key=bucket.default_credential.access_key.get_secret_value(),
+                    access_key=bucket.default_credential.get_access_key_value(),
                     endpoint=bucket_info.profile
                 )
         return user_creds
