@@ -24,6 +24,7 @@ from unittest import mock
 
 from src.lib.data.storage.backends import azure, backends, s3
 from src.lib.data.storage.core import client, header
+from src.lib.utils import osmo_errors
 
 
 class TestBackends(unittest.TestCase):
@@ -143,6 +144,88 @@ class TestBackends(unittest.TestCase):
 
         self.assertTrue(storage_backend_2 in storage_backend_1)
         self.assertTrue(storage_backend_1 not in storage_backend_2)
+
+    def test_s3_backend_requires_access_key_id(self):
+        """Test that S3 backend raises error when access_key_id is None."""
+        # Arrange
+        s3_backend = cast(
+            backends.S3Backend,
+            backends.construct_storage_backend(uri='s3://test-bucket/path'),
+        )
+
+        # Act & Assert
+        with self.assertRaises(osmo_errors.OSMOCredentialError) as context:
+            s3_backend.client_factory(
+                access_key_id=None,
+                access_key='test-secret',
+            )
+        self.assertIn('Access key ID', str(context.exception))
+
+    def test_s3_backend_requires_access_key(self):
+        """Test that S3 backend raises error when access_key is None."""
+        # Arrange
+        s3_backend = cast(
+            backends.S3Backend,
+            backends.construct_storage_backend(uri='s3://test-bucket/path'),
+        )
+
+        # Act & Assert
+        with self.assertRaises(osmo_errors.OSMOCredentialError) as context:
+            s3_backend.client_factory(
+                access_key_id='test-key-id',
+                access_key=None,
+            )
+        self.assertIn('secret access key', str(context.exception))
+
+    def test_swift_backend_requires_credentials(self):
+        """Test that Swift backend raises error when credentials are None."""
+        # Arrange
+        swift_backend = cast(
+            backends.SwiftBackend,
+            backends.construct_storage_backend(
+                uri='swift://swift.example.com/AUTH_namespace/container/path'
+            ),
+        )
+
+        # Act & Assert
+        with self.assertRaises(osmo_errors.OSMOCredentialError) as context:
+            swift_backend.client_factory(
+                access_key_id=None,
+                access_key=None,
+            )
+        self.assertIn('Access key ID', str(context.exception))
+
+    def test_gs_backend_requires_credentials(self):
+        """Test that GS backend raises error when credentials are None."""
+        # Arrange
+        gs_backend = cast(
+            backends.GSBackend,
+            backends.construct_storage_backend(uri='gs://test-bucket/path'),
+        )
+
+        # Act & Assert
+        with self.assertRaises(osmo_errors.OSMOCredentialError) as context:
+            gs_backend.client_factory(
+                access_key_id=None,
+                access_key=None,
+            )
+        self.assertIn('Access key ID', str(context.exception))
+
+    def test_tos_backend_requires_credentials(self):
+        """Test that TOS backend raises error when credentials are None."""
+        # Arrange
+        tos_backend = cast(
+            backends.TOSBackend,
+            backends.construct_storage_backend(uri='tos://tos-s3-us-east-1.example.com/bucket/path'),
+        )
+
+        # Act & Assert
+        with self.assertRaises(osmo_errors.OSMOCredentialError) as context:
+            tos_backend.client_factory(
+                access_key_id=None,
+                access_key=None,
+            )
+        self.assertIn('Access key ID', str(context.exception))
 
 
 class TestAzureBackend(unittest.TestCase):
