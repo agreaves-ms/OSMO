@@ -142,6 +142,32 @@ $ osmo workflow exec <workflow_id> <task_id>
 $ /bin/sh -c "kill -9 $( ps aux | grep '[p]ython' | head -n1 | awk '{print $2}' )"
 ```
 
+### How to reschedule a running task?
+
+If you have a task that is hanging and you want to reschedule it, you can configure exit actions in your workflow specification.
+
+1. Add exit actions to your task definitions in the workflow YAML:
+
+```yaml
+workflow:
+  tasks:
+  - name: my_task
+    exitActions:
+      RESCHEDULE: 137
+```
+
+1. Kill the hanging processes in the tasks using the following command for example (Assuming your hanging process is a python script):
+
+```bash
+$ osmo workflow exec <workflow_id> <task_id> --entry "/bin/sh -c \"kill -9 \\\$( ps aux | grep '[p]ython' | head -n1 | awk '{print \\\$2}' )\""
+```
+
+When you use `kill -9` to terminate a process, it sends the SIGKILL signal. The process will exit with code 137 (128 + 9), which triggers the RESCHEDULE action you configured.
+
+> **Note**
+>
+> This also means your task will automatically be rescheduled if it is failed due to OOM. For more information about exit actions, see [Exit Actions](../workflows/specification/exit_actions.md#workflow-spec-exit-actions).
+
 <a id="faq-workflow-resource-usage"></a>
 
 ### How to determine the resource usage of a workflow?
