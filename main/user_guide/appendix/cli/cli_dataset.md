@@ -20,7 +20,7 @@ SPDX-License-Identifier: Apache-2.0 -->
 
 ```default
 usage: osmo dataset [-h]
-                    {info,upload,delete,download,update,recollect,list,tag,label,metadata,rename,query,collect,inspect,checksum,migrate}
+                    {info,upload,delete,download,update,recollect,list,tag,label,metadata,rename,query,collect,inspect,checksum,migrate,check}
                     ...
 ```
 
@@ -28,7 +28,7 @@ usage: osmo dataset [-h]
 
 * **command**: 
 
-Possible choices: info, upload, delete, download, update, recollect, list, tag, label, metadata, rename, query, collect, inspect, checksum, migrate
+Possible choices: info, upload, delete, download, update, recollect, list, tag, label, metadata, rename, query, collect, inspect, checksum, migrate, check
 
 ## Sub-commands
 
@@ -634,3 +634,30 @@ Default: `20`
 Path to folder where benchmark data will be written to.
 
 Ex. osmo dataset migrate DS1:latest
+
+### check
+
+Check access permissions for dataset operations
+
+```default
+osmo dataset check [-h] [--access-type {READ,WRITE,DELETE}]
+                   [--config-file CONFIG_FILE]
+                   name
+```
+
+#### Positional Arguments
+
+* **name**: 
+
+Dataset name. Specify bucket and tag/version with [bucket/]DS[:tag/version].
+
+#### Named Arguments
+
+* **--access-type, -a**: 
+
+Possible choices: READ, WRITE, DELETE
+
+Access type to check access to the dataset.
+* **--config-file, -c**: 
+
+Path to the config file to use for the access check.

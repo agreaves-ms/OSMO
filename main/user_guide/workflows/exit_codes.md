@@ -50,6 +50,8 @@ user exit codes.
 | 2010            | Download operation failed.                                                                                         |
 | 2011            | Mount operation failed.                                                                                            |
 | 2012            | Upload operation failed.                                                                                           |
+| 2013            | Data authorization check failed.                                                                                   |
+| 2014            | Data access is unauthorized.                                                                                       |
 | 2020            | Invalid authentication token for connecting to the service.                                                        |
 | 2021            | Service connection timed out.                                                                                      |
 | 2022            | Failed to send/receive messages to/from the service.                                                               |

@@ -23,14 +23,14 @@ usage: osmo login [-h] [--device-endpoint DEVICE_ENDPOINT]
                   [--method {code,password,token,dev}] [--username USERNAME]
                   [--password PASSWORD | --password-file PASSWORD_FILE]
                   [--token TOKEN | --token-file TOKEN_FILE]
-                  url
+                  [url]
 ```
 
 ## Positional Arguments
 
 * **url**: 
 
-The url of the osmo server to connect to
+The url of the osmo server to connect to. If not provided, uses the last used url.
 
 ## Named Arguments
 

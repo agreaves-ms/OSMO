@@ -19,14 +19,14 @@ SPDX-License-Identifier: Apache-2.0 -->
 # osmo data
 
 ```default
-usage: osmo data [-h] {upload,download,list,delete} ...
+usage: osmo data [-h] {upload,download,list,delete,check} ...
 ```
 
 ## Positional Arguments
 
 * **command**: 
 
-Possible choices: upload, download, list, delete
+Possible choices: upload, download, list, delete, check
 
 ## Sub-commands
 
@@ -178,3 +178,30 @@ URI where data will be delete from.
 Regex to filter which types of files to delete
 
 Ex. osmo data delete s3://bucket/
+
+### check
+
+Check the access to a backend URI
+
+```default
+osmo data check [-h] [--access-type {READ,WRITE,DELETE}]
+                [--config-file CONFIG_FILE]
+                remote_uri
+```
+
+#### Positional Arguments
+
+* **remote_uri**: 
+
+URI where access will be checked to.
+
+#### Named Arguments
+
+* **--access-type, -a**: 
+
+Possible choices: READ, WRITE, DELETE
+
+Access type to check access to the backend URI.
+* **--config-file, -c**: 
+
+Path to the config file to use for the access check.

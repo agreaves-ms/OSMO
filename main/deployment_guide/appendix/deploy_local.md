@@ -1,4 +1,4 @@
-<!-- SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+<!-- SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -276,8 +276,9 @@ $ helm upgrade --install kai-scheduler \
 Deploy the complete OSMO platform with a single Helm command:
 
 ```bash
-$ helm fetch https://helm.ngc.nvidia.com/nvidia/osmo/charts/quick-start-1.0.0.tgz
-$ helm upgrade --install osmo quick-start-1.0.0.tgz \
+$ helm repo add osmo https://helm.ngc.nvidia.com/nvidia/osmo
+$ helm repo update
+$ helm upgrade --install osmo osmo/quick-start \
   --namespace osmo \
   --create-namespace \
   --wait
