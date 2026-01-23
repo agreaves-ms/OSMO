@@ -287,7 +287,7 @@ def _extract_account_key_from_connection_string(connection_string: str) -> str:
 
 def create_client(
     data_cred: credentials.DataCredential,
-    storage_account: str | None = None,
+    storage_account: str | None = None,  # pylint: disable=unused-argument
     account_url: str | None = None,
 ) -> blob.BlobServiceClient:
     """
