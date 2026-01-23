@@ -24,7 +24,6 @@ import logging
 import os
 import re
 from typing import Any, Callable, Generator, Iterator, List, Tuple, Type
-from urllib.parse import urlparse
 
 from typing_extensions import assert_never, override
 
@@ -274,23 +273,6 @@ class AzureBlobStorageResumableStream(client.ResumableStream):
         return chunk
 
 
-def _extract_storage_account_from_endpoint(endpoint: str) -> str:
-    """Extract storage account name from endpoint URL.
-
-    Supports:
-    - azure://storageaccount
-    - azure://storageaccount/container/path
-    - https://storageaccount.blob.core.windows.net
-    """
-    if endpoint.startswith('azure://'):
-        parts = endpoint.replace('azure://', '').split('/')
-        return parts[0]
-    if '.blob.core.windows.net' in endpoint:
-        parsed = urlparse(endpoint)
-        return parsed.netloc.split('.')[0]
-    raise ValueError(f'Cannot extract storage account from endpoint: {endpoint}')
-
-
 def _extract_account_key_from_connection_string(connection_string: str) -> str:
     """Extract AccountKey from Azure Storage connection string.
 
@@ -303,7 +285,11 @@ def _extract_account_key_from_connection_string(connection_string: str) -> str:
     raise ValueError('AccountKey not found in connection string')
 
 
-def create_client(data_cred: credentials.DataCredential) -> blob.BlobServiceClient:
+def create_client(
+    data_cred: credentials.DataCredential,
+    storage_account: str | None = None,
+    account_url: str | None = None,
+) -> blob.BlobServiceClient:
     """
     Creates a new Azure Blob Storage client.
     """
@@ -313,8 +299,8 @@ def create_client(data_cred: credentials.DataCredential) -> blob.BlobServiceClie
                 conn_str=data_cred.access_key.get_secret_value(),
             )
         case credentials.DefaultDataCredential():
-            storage_account = _extract_storage_account_from_endpoint(data_cred.endpoint)
-            account_url = f'https://{storage_account}.blob.core.windows.net'
+            if account_url is None:
+                raise ValueError('account_url required for DefaultDataCredential')
             return blob.BlobServiceClient(
                 account_url=account_url,
                 credential=DefaultAzureCredential(),
@@ -894,10 +880,16 @@ class AzureBlobStorageClientFactory(provider.StorageClientFactory):
     """
 
     data_cred: credentials.DataCredential
+    storage_account: str
+    account_url: str
 
     @override
     def create(self) -> AzureBlobStorageClient:
         return AzureBlobStorageClient(
-            azure_client_factory=lambda: create_client(self.data_cred),
+            azure_client_factory=lambda: create_client(
+                self.data_cred,
+                storage_account=self.storage_account,
+                account_url=self.account_url,
+            ),
             data_cred=self.data_cred,
         )

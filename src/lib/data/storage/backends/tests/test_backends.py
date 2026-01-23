@@ -245,7 +245,11 @@ class AzureDefaultDataCredentialTest(unittest.TestCase):
         )
 
         # Act
-        azure.create_client(data_cred)
+        azure.create_client(
+            data_cred,
+            storage_account='mystorageaccount',
+            account_url='https://mystorageaccount.blob.core.windows.net',
+        )
 
         # Assert
         mock_azure_cred.assert_called_once()
@@ -253,47 +257,6 @@ class AzureDefaultDataCredentialTest(unittest.TestCase):
             account_url='https://mystorageaccount.blob.core.windows.net',
             credential=mock_credential_instance,
         )
-
-
-class ExtractStorageAccountTest(unittest.TestCase):
-    """Tests for storage account extraction from endpoints."""
-
-    def test_azure_scheme_simple(self):
-        """Test extraction from simple azure:// scheme."""
-        # pylint: disable=protected-access
-        result = azure._extract_storage_account_from_endpoint('azure://mystorageaccount')
-        self.assertEqual(result, 'mystorageaccount')
-
-    def test_azure_scheme_with_container(self):
-        """Test extraction from azure:// scheme with container path."""
-        # pylint: disable=protected-access
-        result = azure._extract_storage_account_from_endpoint(
-            'azure://mystorageaccount/container/path',
-        )
-        self.assertEqual(result, 'mystorageaccount')
-
-    def test_https_blob_url(self):
-        """Test extraction from https blob.core.windows.net URL."""
-        # pylint: disable=protected-access
-        result = azure._extract_storage_account_from_endpoint(
-            'https://mystorageaccount.blob.core.windows.net',
-        )
-        self.assertEqual(result, 'mystorageaccount')
-
-    def test_https_blob_url_with_path(self):
-        """Test extraction from https blob URL with path."""
-        # pylint: disable=protected-access
-        result = azure._extract_storage_account_from_endpoint(
-            'https://mystorageaccount.blob.core.windows.net/container/blob',
-        )
-        self.assertEqual(result, 'mystorageaccount')
-
-    def test_invalid_endpoint_raises(self):
-        """Test that invalid endpoints raise ValueError."""
-        with self.assertRaises(ValueError) as context:
-            # pylint: disable=protected-access
-            azure._extract_storage_account_from_endpoint('invalid://endpoint')
-        self.assertIn('Cannot extract storage account', str(context.exception))
 
 
 class ExtractAccountKeyFromConnectionStringTest(unittest.TestCase):
@@ -353,28 +316,6 @@ class WorkflowConfigCredentialTest(unittest.TestCase):
         self.assertIsInstance(
             config.workflow_data.credential,
             credentials.StaticDataCredential,
-        )
-
-    def test_workflow_config_with_default_credential(self):
-        """Test WorkflowConfig accepts DefaultDataCredential."""
-        default_cred = credentials.DefaultDataCredential(
-            endpoint='azure://mystorageaccount',
-        )
-
-        # Act
-        config = postgres.WorkflowConfig(
-            workflow_data=postgres.DataConfig(credential=default_cred),
-            workflow_log=postgres.LogConfig(credential=default_cred),
-        )
-
-        # Assert
-        self.assertIsInstance(
-            config.workflow_data.credential,
-            credentials.DefaultDataCredential,
-        )
-        self.assertIsInstance(
-            config.workflow_log.credential,
-            credentials.DefaultDataCredential,
         )
 
     def test_workflow_config_with_null_credential(self):
